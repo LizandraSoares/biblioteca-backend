@@ -20,12 +20,7 @@ const swaggerPath = path.join(process.cwd(), 'api/swagger/openapi.yaml');
 
 const swaggerDocument = YAML.load(swaggerPath);
 
-app.use('/docs', swaggerUi.serve);
-
-app.get(
-  '/docs',
-  swaggerUi.setup(swaggerDocument)
-);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
   res.json({
