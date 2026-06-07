@@ -1,0 +1,13 @@
+openapi: 3.0.0
+
+info:
+  title: Biblioteca Virtual API
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      summary: API funcionando
+      responses:
+        '200':
+          description: OK
