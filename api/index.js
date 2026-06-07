@@ -2,8 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-
-const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
 const booksRoutes = require('../src/routes/booksRoutes');
@@ -16,16 +14,71 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const swaggerPath = path.join(process.cwd(), 'api/swagger/openapi.yaml');
-const swaggerDocument = YAML.load(swaggerPath);
 
-const swaggerHtml = swaggerUi.generateHTML(swaggerDocument);
+const swaggerDocument = YAML.load(
+  path.join(__dirname, 'swagger/openapi.yaml')
+);
 
-app.use('/docs', swaggerUi.serve);
-app.get('/docs', (req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.send(swaggerHtml);
+app.get('/swagger.json', (req, res) => {
+  res.json(swaggerDocument);
 });
+
+
+app.get('/docs', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Swagger UI</title>
+
+      <link
+        rel="stylesheet"
+        href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"
+      />
+
+      <style>
+        body {
+          margin: 0;
+          background: #fafafa;
+        }
+
+        #swagger-ui {
+          max-width: 100%;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div id="swagger-ui"></div>
+
+      <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+
+      <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+
+      <script>
+        window.onload = () => {
+          window.ui = SwaggerUIBundle({
+            url: '/swagger.json',
+            dom_id: '#swagger-ui',
+
+            deepLinking: true,
+
+            presets: [
+              SwaggerUIBundle.presets.apis,
+              SwaggerUIStandalonePreset
+            ],
+
+            layout: 'BaseLayout'
+          });
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
+
 
 app.get('/', (req, res) => {
   res.json({
@@ -35,10 +88,13 @@ app.get('/', (req, res) => {
   });
 });
 
+
 app.use('/books', booksRoutes);
+
 
 app.use(notFound);
 app.use(errorHandler);
+
 
 const PORT = process.env.PORT || 3000;
 
