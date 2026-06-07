@@ -4,6 +4,9 @@ info:
   title: Biblioteca Virtual API
   version: 1.0.0
 
+servers:
+  - url: https://biblioteca-backend-six.vercel.app
+
 paths:
   /:
     get:
