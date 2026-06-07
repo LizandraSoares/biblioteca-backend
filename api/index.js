@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
@@ -15,9 +16,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const swaggerDocument = YAML.load(
-  path.join(__dirname, 'swagger/openapi.yaml')
-);
+const swaggerPath = path.join(process.cwd(), 'api/swagger/openapi.yaml');
+
+const swaggerDocument = YAML.load(swaggerPath);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/books', booksRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 
