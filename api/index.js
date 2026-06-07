@@ -17,10 +17,15 @@ app.use(cors());
 app.use(express.json());
 
 const swaggerPath = path.join(process.cwd(), 'api/swagger/openapi.yaml');
-
 const swaggerDocument = YAML.load(swaggerPath);
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerHtml = swaggerUi.generateHTML(swaggerDocument);
+
+app.use('/docs', swaggerUi.serve);
+app.get('/docs', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(swaggerHtml);
+});
 
 app.get('/', (req, res) => {
   res.json({
